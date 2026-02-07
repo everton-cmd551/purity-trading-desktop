@@ -59,7 +59,7 @@ function createMainWindow() {
         }
     });
 
-    // Load the Vercel URL
+    // FORCE LOAD PRODUCTION URL
     mainWindow.loadURL('https://puritytrading.vercel.app');
 
     // Force the view to be compact and crisp (85% zoom)
