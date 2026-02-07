@@ -63,6 +63,25 @@ async function createMainWindow() {
     // Clear only HTTP cache to ensure we get the latest deployment, but keep cookies (login)
     await mainWindow.webContents.session.clearCache();
 
+    console.log('Loading URL: https://puritytrading.vercel.app');
+    mainWindow.loadURL('https://puritytrading.vercel.app');
+
+    // AGGRESSIVE CACHE BUSTING: Unregister any existing Service Workers
+    mainWindow.webContents.executeJavaScript(`
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for(let registration of registrations) {
+                    registration.unregister();
+                    console.log('Service Worker Unregistered');
+                }
+            });
+            caches.keys().then(names => {
+                for (let name of names) caches.delete(name);
+                console.log('Caches Deleted');
+            });
+        }
+    `);
+
     mainWindow.loadURL('https://puritytrading.vercel.app');
 
     // Force the view to be compact and crisp (85% zoom)
