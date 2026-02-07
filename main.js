@@ -41,7 +41,7 @@ function createSplashWindow() {
     splashWindow.loadFile('splash.html');
 }
 
-function createMainWindow() {
+async function createMainWindow() {
     mainWindow = new BrowserWindow({
         width: 1440,
         height: 900,
@@ -60,6 +60,11 @@ function createMainWindow() {
     });
 
     // FORCE LOAD PRODUCTION URL
+    // FORCE LOAD PRODUCTION URL
+    // Clear cache to ensure we get the latest deployment
+    await mainWindow.webContents.session.clearCache();
+    await mainWindow.webContents.session.clearStorageData();
+
     mainWindow.loadURL('https://puritytrading.vercel.app');
 
     // Force the view to be compact and crisp (85% zoom)
