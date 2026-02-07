@@ -56,43 +56,12 @@ async function createMainWindow() {
             sandbox: true, // Financial Grade: Enable Sandboxing
             preload: path.join(__dirname, 'preload.js'),
             // NUCLEAR FIX: Use a new partition to abandon all old cache/storage
-            partition: 'persist:purity_trading_live',
+            partition: 'persist:purity_trading_live_v2',
             devTools: false // Production grade: Disable DevTools
         }
     });
 
-
-
-    // FORCE LOAD PRODUCTION URL
-    // Clear only HTTP cache to ensure we get the latest deployment, but keep cookies (login)
-    await mainWindow.webContents.session.clearCache();
-
-    console.log('Loading URL: https://puritytrading.vercel.app');
-    mainWindow.loadURL('https://puritytrading.vercel.app');
-
-    // AGGRESSIVE CACHE BUSTING: Unregister any existing Service Workers
-    mainWindow.webContents.executeJavaScript(`
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for(let registration of registrations) {
-                    registration.unregister();
-                    console.log('Service Worker Unregistered');
-                }
-            });
-            caches.keys().then(names => {
-                for (let name of names) caches.delete(name);
-                console.log('Caches Deleted');
-            });
-        }
-    `);
-
-    mainWindow.loadURL('https://puritytrading.vercel.app');
-
-    // Force the view to be compact and crisp (85% zoom)
-    mainWindow.webContents.setZoomFactor(0.85);
-
-    // Optional: Prevent users from zooming in/out accidentally
-    mainWindow.webContents.setVisualZoomLevelLimits(1, 1);
+    // --- CURTAIN LIFTER LOGIC (Move to top to ensure it runs) ---
 
     // 1. Show when ready (Standard Way)
     mainWindow.once('ready-to-show', () => {
@@ -103,7 +72,7 @@ async function createMainWindow() {
         mainWindow.maximize();
     });
 
-    // 2. Backup: Show when finished loading (if ready-to-show is delayed)
+    // 2. Backup: Show when finished loading
     mainWindow.webContents.on('did-finish-load', () => {
         if (splashWindow && !splashWindow.isDestroyed()) {
             splashWindow.destroy();
@@ -112,14 +81,40 @@ async function createMainWindow() {
         }
     });
 
-    // 3. Failsafe (Safety Net): Force show after 5 seconds
+    // 3. Failsafe (Safety Net): Force show after 5 seconds NO MATTER WHAT
     setTimeout(() => {
         if (splashWindow && !splashWindow.isDestroyed()) {
             splashWindow.destroy();
             mainWindow.show();
             mainWindow.maximize();
         }
-    }, 5000); // 5 seconds max wait
+    }, 5000);
+
+    // --- END CURTAIN LIFTER ---
+
+    // Clear HTTP cache (Non-blocking: no await)
+    mainWindow.webContents.session.clearCache();
+
+    console.log('Loading URL: https://puritytrading.vercel.app');
+    mainWindow.loadURL('https://puritytrading.vercel.app');
+
+    // AGGRESSIVE CACHE BUSTING: Unregister any existing Service Workers
+    mainWindow.webContents.executeJavaScript(`
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+            caches.keys().then(names => {
+                for (let name of names) caches.delete(name);
+            });
+        }
+    `);
+
+    // Force crisp view
+    mainWindow.webContents.setZoomFactor(0.85);
+    mainWindow.webContents.setVisualZoomLevelLimits(1, 1);
 
     // Handle crash or refresh
     mainWindow.on('closed', () => {
