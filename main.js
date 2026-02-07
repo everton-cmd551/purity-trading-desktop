@@ -61,12 +61,7 @@ async function createMainWindow() {
         }
     });
 
-    // DEBUG: Prove to user that new code is running
-    dialog.showMessageBoxSync(mainWindow, {
-        type: 'info',
-        title: 'Purity Trading v1.0.8',
-        message: 'System updated. Loading Live Environment...'
-    });
+
 
     // FORCE LOAD PRODUCTION URL
     // Clear only HTTP cache to ensure we get the latest deployment, but keep cookies (login)
@@ -99,14 +94,32 @@ async function createMainWindow() {
     // Optional: Prevent users from zooming in/out accidentally
     mainWindow.webContents.setVisualZoomLevelLimits(1, 1);
 
-    // Once the main system is ready, switch windows
+    // 1. Show when ready (Standard Way)
     mainWindow.once('ready-to-show', () => {
-        if (splashWindow) {
+        if (splashWindow && !splashWindow.isDestroyed()) {
             splashWindow.destroy();
         }
         mainWindow.show();
         mainWindow.maximize();
     });
+
+    // 2. Backup: Show when finished loading (if ready-to-show is delayed)
+    mainWindow.webContents.on('did-finish-load', () => {
+        if (splashWindow && !splashWindow.isDestroyed()) {
+            splashWindow.destroy();
+            mainWindow.show();
+            mainWindow.maximize();
+        }
+    });
+
+    // 3. Failsafe (Safety Net): Force show after 5 seconds
+    setTimeout(() => {
+        if (splashWindow && !splashWindow.isDestroyed()) {
+            splashWindow.destroy();
+            mainWindow.show();
+            mainWindow.maximize();
+        }
+    }, 5000); // 5 seconds max wait
 
     // Handle crash or refresh
     mainWindow.on('closed', () => {
