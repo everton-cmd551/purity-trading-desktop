@@ -1,7 +1,7 @@
 {
     "name": "purity-trading-desktop",
     "productName": "Purity Trading ERP",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Desktop wrapper for Purity Trading ERP",
     "main": "main.js",
     "scripts": {

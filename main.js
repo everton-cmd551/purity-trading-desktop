@@ -43,8 +43,10 @@ function createSplashWindow() {
 
 function createMainWindow() {
     mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 800,
+        width: 1440,
+        height: 900,
+        minWidth: 1024,
+        minHeight: 768,
         show: false, // Initially hide while loading
         autoHideMenuBar: true, // Native look: Hide menus
         icon: path.join(__dirname, 'assets/icon.ico'),
@@ -59,6 +61,12 @@ function createMainWindow() {
 
     // Load the Vercel URL
     mainWindow.loadURL('https://puritytrading.vercel.app');
+
+    // Force the view to be compact and crisp (85% zoom)
+    mainWindow.webContents.setZoomFactor(0.85);
+
+    // Optional: Prevent users from zooming in/out accidentally
+    mainWindow.webContents.setVisualZoomLevelLimits(1, 1);
 
     // Once the main system is ready, switch windows
     mainWindow.once('ready-to-show', () => {
