@@ -55,8 +55,17 @@ async function createMainWindow() {
             contextIsolation: true,
             sandbox: true, // Financial Grade: Enable Sandboxing
             preload: path.join(__dirname, 'preload.js'),
+            // NUCLEAR FIX: Use a new partition to abandon all old cache/storage
+            partition: 'persist:purity_trading_live',
             devTools: false // Production grade: Disable DevTools
         }
+    });
+
+    // DEBUG: Prove to user that new code is running
+    dialog.showMessageBoxSync(mainWindow, {
+        type: 'info',
+        title: 'Purity Trading v1.0.8',
+        message: 'System updated. Loading Live Environment...'
     });
 
     // FORCE LOAD PRODUCTION URL
