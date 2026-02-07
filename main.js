@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, safeStorage } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
@@ -9,6 +9,21 @@ autoUpdater.logger.transports.file.level = 'info';
 
 let mainWindow;
 let splashWindow;
+
+// Secure Storage IPC Handlers
+ipcMain.handle('encrypt-data', async (event, plainText) => {
+    if (safeStorage.isEncryptionAvailable()) {
+        return safeStorage.encryptString(plainText);
+    }
+    throw new Error('Encryption not available');
+});
+
+ipcMain.handle('decrypt-data', async (event, encryptedBuffer) => {
+    if (safeStorage.isEncryptionAvailable()) {
+        return safeStorage.decryptString(encryptedBuffer);
+    }
+    throw new Error('Encryption not available');
+});
 
 function createSplashWindow() {
     splashWindow = new BrowserWindow({
@@ -36,6 +51,8 @@ function createMainWindow() {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
+            sandbox: true, // Financial Grade: Enable Sandboxing
+            preload: path.join(__dirname, 'preload.js'),
             devTools: false // Production grade: Disable DevTools
         }
     });
