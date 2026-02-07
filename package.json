@@ -1,0 +1,49 @@
+{
+    "name": "purity-trading-desktop",
+    "productName": "Purity Trading ERP",
+    "version": "1.0.0",
+    "description": "Desktop wrapper for Purity Trading ERP",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "dist": "electron-builder"
+    },
+    "author": "Purity Trading",
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/everton-cmd551/purity-trading-desktop.git"
+    },
+    "dependencies": {
+        "electron-log": "^5.1.0",
+        "electron-updater": "^6.1.7"
+    },
+    "devDependencies": {
+        "electron": "^28.0.0",
+        "electron-builder": "^24.9.1"
+    },
+    "build": {
+        "appId": "com.puritytrading.erp",
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "everton-cmd551",
+                "repo": "purity-trading-desktop"
+            }
+        ],
+        "directories": {
+            "output": "dist"
+        },
+        "win": {
+            "target": "nsis",
+            "icon": "assets/icon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "Purity Trading ERP"
+        }
+    }
+}
