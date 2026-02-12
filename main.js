@@ -21,7 +21,7 @@ function createWindow() {
     const productionURL = 'https://puritytrading.vercel.app';
 
     // Remove the default menu (optional, makes it look more like an app)
-    // win.setMenuBarVisibility(false); // Enable menu for debugging
+    win.setMenuBarVisibility(false); // Enable menu for debugging
 
     // Enhanced Error Handling
     win.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
@@ -39,7 +39,7 @@ function createWindow() {
         // If running the .exe, load the Live Vercel App
         console.log(`Loading Production URL: ${productionURL}`);
         win.loadURL(productionURL).catch(err => console.error('Error loading URL:', err));
-        win.webContents.openDevTools(); // <--- CRITICAL: Open Console for debugging
+        // win.webContents.openDevTools(); // <--- CRITICAL: Open Console for debugging
     } else {
         // If running 'npm start', load localhost
         win.loadURL('http://localhost:3000');
