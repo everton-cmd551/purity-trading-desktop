@@ -1,0 +1,58 @@
+{
+    "name": "purity-trading-desktop",
+    "productName": "Purity Trading ERP",
+    "version": "1.1.1",
+    "description": "Desktop client for Purity Trading ERP",
+    "main": "main.js",
+    "author": "Season Fresh",
+    "license": "UNLICENSED",
+    "private": true,
+    "scripts": {
+        "start": "electron .",
+        "dist": "electron-builder --publish always"
+    },
+    "build": {
+        "appId": "com.puritytrading.erp",
+        "productName": "Purity Trading ERP",
+        "win": {
+            "target": "nsis",
+            "icon": "icon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "runAfterFinish": true
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "everton-cmd551",
+            "repo": "purity-trading-desktop"
+        },
+        "files": [
+            "main.js",
+            "package.json",
+            "node_modules/electron-updater/**",
+            "node_modules/electron-log/**",
+            "node_modules/builder-util-runtime/**",
+            "node_modules/lazy-val/**",
+            "node_modules/semver/**",
+            "node_modules/lodash.isequal/**",
+            "node_modules/js-yaml/**",
+            "node_modules/argparse/**",
+            "node_modules/sax/**",
+            "node_modules/tiny-typed-emitter/**"
+        ],
+        "directories": {
+            "output": "dist"
+        }
+    },
+    "dependencies": {
+        "electron-log": "^5.3.3",
+        "electron-updater": "^6.3.9"
+    },
+    "devDependencies": {
+        "electron": "^28.3.3",
+        "electron-builder": "^24.13.3"
+    }
+}
