@@ -1,14 +1,8 @@
 const { app, BrowserWindow, shell, dialog } = require('electron');
-const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
-// Configure auto-updater logging
-autoUpdater.logger = require('electron-log');
-autoUpdater.logger.transports.file.level = 'info';
-
-// Don't auto-download — let user decide
-autoUpdater.autoDownload = false;
-autoUpdater.autoInstallOnAppQuit = true;
+// Fix: Disable hardware acceleration to prevent white screen on some systems
+app.disableHardwareAcceleration();
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -16,23 +10,49 @@ function createWindow() {
         height: 800,
         title: "Purity Trading ERP",
         webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true,
+            nodeIntegration: false, // Security: Must be FALSE for remote content
+            contextIsolation: true, // Security: Must be TRUE
+            // preload: path.join(__dirname, 'preload.js') // Optional if needed later
         }
     });
 
+    // CRITICAL: Load the live production URL. 
+    // Do NOT load localhost or file:// in production.
     const productionURL = 'https://puritytrading.vercel.app';
 
-    win.setMenuBarVisibility(false);
+    // Remove the default menu (optional, makes it look more like an app)
+    // win.setMenuBarVisibility(false); // Enable menu for debugging
 
-    if (!app.isPackaged) {
-        win.loadURL('http://localhost:3000');
-        win.webContents.openDevTools();
+    // Enhanced Error Handling
+    win.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+        console.error('Failed to load:', errorCode, errorDescription);
+        // Show error to user so they know what happened
+        dialog.showErrorBox('Connection Error', `Failed to load application.\nError: ${errorDescription} (${errorCode})\nPlease check your internet connection.`);
+    });
+
+    win.webContents.on('crashed', (event) => {
+        console.error('Renderer process crashed');
+        dialog.showErrorBox('Application Error', 'The application renderer process crashed. Please restart the app.');
+    });
+
+    if (app.isPackaged) {
+        // If running the .exe, load the Live Vercel App
+        console.log(`Loading Production URL: ${productionURL}`);
+        win.loadURL(productionURL).catch(err => console.error('Error loading URL:', err));
+        win.webContents.openDevTools(); // <--- CRITICAL: Open Console for debugging
     } else {
-        win.loadURL(productionURL);
+        // If running 'npm start', load localhost
+        win.loadURL('http://localhost:3000');
     }
 
-    // Open external links in the default browser
+    // Always open DevTools for now to see console errors
+    // win.webContents.openDevTools(); // Commented out for production, but can be enabled for debugging
+
+    win.webContents.on('console-message', (event, level, message, line, sourceId) => {
+        console.log(`[Renderer Console] ${message} (${sourceId}:${line})`);
+    });
+
+    // UX: Open external links (like PDF invoices or Help pages) in the user's default browser
     win.webContents.setWindowOpenHandler(({ url }) => {
         if (url.startsWith('https:') && !url.includes('puritytrading.vercel.app')) {
             shell.openExternal(url);
@@ -40,83 +60,9 @@ function createWindow() {
         }
         return { action: 'allow' };
     });
-
-    return win;
 }
 
-// ── Auto-Update Logic ──────────────────────────────────────────────
-
-function setupAutoUpdater() {
-    // Check for updates 5 seconds after launch
-    setTimeout(() => {
-        autoUpdater.checkForUpdates();
-    }, 5000);
-
-    // Also check every 30 minutes
-    setInterval(() => {
-        autoUpdater.checkForUpdates();
-    }, 30 * 60 * 1000);
-
-    autoUpdater.on('update-available', (info) => {
-        dialog.showMessageBox({
-            type: 'info',
-            title: 'Update Available',
-            message: `A new version (v${info.version}) of Purity Trading ERP is available.`,
-            detail: 'Would you like to download and install it now?',
-            buttons: ['Update Now', 'Later'],
-            defaultId: 0,
-        }).then((result) => {
-            if (result.response === 0) {
-                autoUpdater.downloadUpdate();
-            }
-        });
-    });
-
-    autoUpdater.on('download-progress', (progressObj) => {
-        let message = `Download speed: ${Math.round(progressObj.bytesPerSecond / 1024)} KB/s`;
-        message += ` — ${Math.round(progressObj.percent)}% complete`;
-        const win = BrowserWindow.getAllWindows()[0];
-        if (win) {
-            win.setTitle(`Purity Trading ERP — Updating ${Math.round(progressObj.percent)}%`);
-        }
-    });
-
-    autoUpdater.on('update-downloaded', (info) => {
-        const win = BrowserWindow.getAllWindows()[0];
-        if (win) {
-            win.setTitle('Purity Trading ERP');
-        }
-
-        dialog.showMessageBox({
-            type: 'info',
-            title: 'Update Ready',
-            message: `Version ${info.version} has been downloaded.`,
-            detail: 'The application will restart to apply the update.',
-            buttons: ['Restart Now', 'Restart Later'],
-            defaultId: 0,
-        }).then((result) => {
-            if (result.response === 0) {
-                autoUpdater.quitAndInstall(false, true);
-            }
-        });
-    });
-
-    autoUpdater.on('error', (err) => {
-        // Silently log errors — don't bother the user
-        console.error('Auto-update error:', err.message);
-    });
-}
-
-// ── App Lifecycle ──────────────────────────────────────────────────
-
-app.whenReady().then(() => {
-    createWindow();
-
-    // Only run auto-updater in packaged app
-    if (app.isPackaged) {
-        setupAutoUpdater();
-    }
-});
+app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
