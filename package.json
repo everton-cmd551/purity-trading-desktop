@@ -5,6 +5,10 @@
   "description": "Purity Trading ERP Desktop Application",
   "main": "main.js",
   "author": "Season Fresh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/everton-cmd551/purity-trading-desktop.git"
+  },
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder -w nsis"
@@ -12,6 +16,13 @@
   "build": {
     "appId": "com.puritytrading.erp",
     "productName": "Purity Trading ERP",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "everton-cmd551",
+        "repo": "purity-trading-desktop"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "public/favicon.ico",
