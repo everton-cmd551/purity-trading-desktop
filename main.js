@@ -1,5 +1,6 @@
 const { app, BrowserWindow, shell, dialog } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
 // Fix: Disable hardware acceleration to prevent white screen on some systems
 app.disableHardwareAcceleration();
@@ -40,6 +41,9 @@ function createWindow() {
         console.log(`Loading Production URL: ${productionURL}`);
         win.loadURL(productionURL).catch(err => console.error('Error loading URL:', err));
         // win.webContents.openDevTools(); // <--- CRITICAL: Open Console for debugging
+
+        // Check for updates
+        autoUpdater.checkForUpdatesAndNotify();
     } else {
         // If running 'npm start', load localhost
         win.loadURL('http://localhost:3000');
@@ -61,6 +65,16 @@ function createWindow() {
         return { action: 'allow' };
     });
 }
+
+// Auto-Updater Events
+autoUpdater.on('update-available', () => {
+    console.log('Update available.');
+});
+
+autoUpdater.on('update-downloaded', () => {
+    console.log('Update downloaded. Quitting and installing...');
+    autoUpdater.quitAndInstall();
+});
 
 app.whenReady().then(createWindow);
 

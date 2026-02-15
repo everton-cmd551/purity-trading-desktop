@@ -1,24 +1,39 @@
 {
-  "name": "purity-trading",
-  "productName": "Purity-Trading",
-  "version": "1.1.3",
-  "private": true,
-  "description": "Purity Trading ERP System",
+  "name": "purity-trading-desktop",
+  "productName": "Purity Trading ERP",
+  "version": "1.1.4",
+  "description": "Purity Trading ERP Desktop Application",
   "main": "main.js",
   "author": "Season Fresh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/everton-cmd551/purity-trading-desktop.git"
+  },
   "scripts": {
-    "dist": "electron-builder"
+    "start": "electron .",
+    "dist": "electron-builder -w nsis"
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.7"
   },
   "build": {
     "appId": "com.puritytrading.erp",
     "productName": "Purity Trading ERP",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "everton-cmd551",
+        "repo": "purity-trading-desktop"
+      }
+    ],
     "win": {
       "target": "nsis",
-      "icon": "public/favicon.ico"
+      "icon": "public/favicon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
       "runAfterFinish": true
     },
