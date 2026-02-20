@@ -9,7 +9,7 @@ function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
         height: 800,
-        title: "Purity Trading ERP",
+        title: "Season Fresh ERP",
         webPreferences: {
             nodeIntegration: false, // Security: Must be FALSE for remote content
             contextIsolation: true, // Security: Must be TRUE

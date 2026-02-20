@@ -1,8 +1,8 @@
 {
   "name": "purity-trading-desktop",
-  "productName": "Purity Trading ERP",
-  "version": "1.1.4",
-  "description": "Purity Trading ERP Desktop Application",
+  "productName": "Season Fresh ERP",
+  "version": "1.1.5",
+  "description": "Season Fresh ERP Desktop Application",
   "main": "main.js",
   "author": "Season Fresh",
   "repository": {
@@ -18,7 +18,7 @@
   },
   "build": {
     "appId": "com.puritytrading.erp",
-    "productName": "Purity Trading ERP",
+    "productName": "Season Fresh ERP",
     "publish": [
       {
         "provider": "github",

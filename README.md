@@ -1,9 +1,9 @@
-# Purity Trading ERP - Desktop Client
+# Season Fresh ERP - Desktop Client
 
-A lightweight Electron wrapper that loads the Purity Trading ERP web application.
+A lightweight Electron wrapper that loads the Season Fresh ERP web application.
 
 ## Features
-- Loads the live Purity Trading ERP from `puritytrading.vercel.app`
+- Loads the live Season Fresh ERP from `puritytrading.vercel.app`
 - Automatic updates — users get notified when a new version is available
 - Desktop shortcut and native window experience
 
