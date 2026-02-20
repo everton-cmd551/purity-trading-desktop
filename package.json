@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder -w nsis"
+    "dist": "electron-builder -w nsis -p always"
   },
   "dependencies": {
     "electron-updater": "^6.1.7"
